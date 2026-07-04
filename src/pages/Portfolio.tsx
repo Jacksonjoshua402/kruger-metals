@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PROJECTS } from "../data";
 import Icon from "../components/Icon";
 import PageHero from "../components/PageHero";
@@ -20,6 +20,7 @@ export default function Portfolio({
 }) {
   const [filter, setFilter] = useState("All");
   const [active, setActive] = useState<string | null>(null);
+  const [slide, setSlide] = useState(0);
 
   const visible =
     filter === "All"
@@ -27,6 +28,40 @@ export default function Portfolio({
       : PROJECTS.filter((p) => p.category === filter);
 
   const activeProject = PROJECTS.find((p) => p.id === active);
+  const gallery =
+    activeProject?.media && activeProject.media.length > 0
+      ? activeProject.media
+      : activeProject
+      ? [{ type: "image" as const, src: activeProject.image }]
+      : [];
+
+  function openProject(id: string) {
+    setActive(id);
+    setSlide(0);
+  }
+
+  function closeProject() {
+    setActive(null);
+    setSlide(0);
+  }
+
+  function next() {
+    setSlide((s) => (s + 1) % gallery.length);
+  }
+
+  function prev() {
+    setSlide((s) => (s - 1 + gallery.length) % gallery.length);
+  }
+
+  useEffect(() => {
+    if (active) {
+      const original = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = original;
+      };
+    }
+  }, [active]);
 
   return (
     <div>
@@ -57,7 +92,7 @@ export default function Portfolio({
             {visible.map((p) => (
               <button
                 key={p.id}
-                onClick={() => setActive(p.id)}
+                onClick={() => openProject(p.id)}
                 className="group overflow-hidden rounded-xl bg-white text-left shadow-sm ring-1 ring-slate-100 transition hover:-translate-y-1 hover:shadow-xl"
               >
                 <div className="relative h-56 overflow-hidden">
@@ -70,6 +105,12 @@ export default function Portfolio({
                   <span className="absolute left-4 top-4 rounded-full bg-[#FF8C00] px-3 py-1 text-xs font-bold text-white">
                     {p.category}
                   </span>
+                  {p.media && p.media.length > 1 && (
+                    <span className="absolute bottom-4 right-4 flex items-center gap-1 rounded-full bg-black/60 px-2.5 py-1 text-xs font-bold text-white">
+                      <Icon name="image" className="h-3.5 w-3.5" />
+                      {p.media.length}
+                    </span>
+                  )}
                 </div>
                 <div className="p-6">
                   <h3 className="text-lg font-bold text-[#2C3E50]">{p.title}</h3>
@@ -108,45 +149,108 @@ export default function Portfolio({
       {activeProject && (
         <div
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4"
-          onClick={() => setActive(null)}
+          onClick={closeProject}
         >
           <div
-            className="max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl"
+            className="flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="relative">
-              <img
-                src={activeProject.image}
-                alt={activeProject.title}
-                className="h-64 w-full object-cover sm:h-80"
-              />
+            <div className="relative shrink-0 bg-black">
+              {gallery[slide].type === "video" ? (
+                <video
+                  key={gallery[slide].src}
+                  src={gallery[slide].src}
+                  controls
+                  autoPlay
+                  className="h-[32vh] w-full bg-black object-contain sm:h-[42vh]"
+                />
+              ) : (
+                <img
+                  key={gallery[slide].src}
+                  src={gallery[slide].src}
+                  alt={activeProject.title}
+                  className="h-[32vh] w-full object-cover sm:h-[42vh]"
+                />
+              )}
+
               <button
-                onClick={() => setActive(null)}
+                onClick={closeProject}
                 className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-[#2C3E50] shadow hover:bg-white"
                 aria-label="Close"
               >
                 <Icon name="close" className="h-5 w-5" />
               </button>
+
+              {gallery.length > 1 && (
+                <>
+                  <button
+                    onClick={prev}
+                    className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[#2C3E50] shadow hover:bg-white"
+                    aria-label="Previous"
+                  >
+                    <Icon name="arrow" className="h-5 w-5 rotate-180" />
+                  </button>
+                  <button
+                    onClick={next}
+                    className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 text-[#2C3E50] shadow hover:bg-white"
+                    aria-label="Next"
+                  >
+                    <Icon name="arrow" className="h-5 w-5" />
+                  </button>
+                  <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1 text-xs font-bold text-white">
+                    {slide + 1} / {gallery.length}
+                  </span>
+                </>
+              )}
             </div>
-            <div className="p-7">
-              <span className="text-sm font-bold uppercase tracking-wider text-[#FF8C00]">
-                {activeProject.category}
-              </span>
-              <h3 className="mt-1 text-2xl font-extrabold text-[#2C3E50]">
-                {activeProject.title}
-              </h3>
-              <p className="mt-4 leading-relaxed text-slate-600">
-                {activeProject.description}
-              </p>
-              <button
-                onClick={() => {
-                  setActive(null);
-                  navigate("contact");
-                }}
-                className="mt-6 rounded-md bg-[#2C3E50] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#FF8C00]"
-              >
-                Request a Similar Project
-              </button>
+
+            <div className="flex-1 overflow-y-auto">
+              {gallery.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto border-b border-slate-100 bg-slate-50 p-3">
+                  {gallery.map((m, i) => (
+                    <button
+                      key={m.src + i}
+                      onClick={() => setSlide(i)}
+                      className={`relative h-14 w-20 shrink-0 overflow-hidden rounded-md ring-2 transition ${
+                        i === slide ? "ring-[#FF8C00]" : "ring-transparent"
+                      }`}
+                    >
+                      {m.type === "video" ? (
+                        <div className="flex h-full w-full items-center justify-center bg-[#2C3E50] text-white">
+                          <Icon name="play" className="h-5 w-5" />
+                        </div>
+                      ) : (
+                        <img
+                          src={m.src}
+                          alt=""
+                          className="h-full w-full object-cover"
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              <div className="p-7">
+                <span className="text-sm font-bold uppercase tracking-wider text-[#FF8C00]">
+                  {activeProject.category}
+                </span>
+                <h3 className="mt-1 text-2xl font-extrabold text-[#2C3E50]">
+                  {activeProject.title}
+                </h3>
+                <p className="mt-4 leading-relaxed text-slate-600">
+                  {activeProject.description}
+                </p>
+                <button
+                  onClick={() => {
+                    closeProject();
+                    navigate("contact");
+                  }}
+                  className="mt-6 rounded-md bg-[#2C3E50] px-6 py-3 text-sm font-bold text-white transition hover:bg-[#FF8C00]"
+                >
+                  Request a Similar Project
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -12,12 +12,19 @@ export const COMPANY = {
   years: 6,
 };
 
+export type MediaItem = {
+  type: "image" | "video";
+  src: string;
+  alt?: string;
+};
+
 export type Project = {
   id: string;
   title: string;
   category: string;
   description: string;
   image: string;
+  media?: MediaItem[];
 };
 
 export const PROJECTS: Project[] = [
@@ -28,6 +35,14 @@ export const PROJECTS: Project[] = [
     description:
       "A show-stopping laser-cut pergola roof paired with matching privacy screens and a feature gate, all sharing one fractured-glass motif. Customisable sizes and shapes with a seamless, professional installation.",
     image: "/images/cnc-pergola-1.jpg",
+    media: [
+      { type: "image", src: "/images/cnc-pergola-1.jpg" },
+      { type: "image", src: "/images/cnc-pergola-2.jpg" },
+      { type: "image", src: "/images/cnc-pergola-3.jpg" },
+      { type: "image", src: "/images/cnc-pergola-gate-detail.jpg" },
+      { type: "image", src: "/images/cnc-pergola-underside.jpg" },
+      { type: "video", src: "/videos/cnc-pergolas.mp4" },
+    ],
   },
   {
     id: "vine-gate",
@@ -36,6 +51,12 @@ export const PROJECTS: Project[] = [
     description:
       "A statement sliding gate combining vertical steel bars with a laser-cut vine and leaf pattern. Delivered on time with the precision and professionalism our clients have come to expect.",
     image: "/images/vine-sliding-gate-1.jpg",
+    media: [
+      { type: "image", src: "/images/vine-sliding-gate-1.jpg" },
+      { type: "image", src: "/images/vine-sliding-gate-2.jpg" },
+      { type: "image", src: "/images/vine-sliding-gate-3.jpg" },
+      { type: "image", src: "/images/vine-sliding-gate-4.jpg" },
+    ],
   },
   {
     id: "kumwitu",
@@ -60,6 +81,14 @@ export const PROJECTS: Project[] = [
     description:
       "Matching CNC laser-cut balustrade and overhead pergola installed on a residential balcony in Chifwema — a cohesive design language carried across two structures.",
     image: "/images/chifwema-pergola.jpg",
+    media: [
+      { type: "image", src: "/images/chifwema-pergola.jpg" },
+      { type: "image", src: "/images/chifwema-pergola-2.jpg" },
+      { type: "image", src: "/images/chifwema-balustrade.jpg" },
+      { type: "image", src: "/images/night-balustrade-branded.jpg" },
+      { type: "video", src: "/videos/chifwema-balustrade.mp4" },
+      { type: "video", src: "/videos/cnc-steel-alnex-duplex.mp4" },
+    ],
   },
   {
     id: "steel-windows",
@@ -68,6 +97,14 @@ export const PROJECTS: Project[] = [
     description:
       "Durable, security-rated steel sliding windows in horizontal-bar and louvre styles, precision-fitted for a clean finish and lasting protection.",
     image: "/images/window-sliding-1.jpg",
+    media: [
+      { type: "image", src: "/images/window-sliding-1.jpg" },
+      { type: "image", src: "/images/window-sliding-2.jpg" },
+      { type: "image", src: "/images/window-louver-1.jpg" },
+      { type: "image", src: "/images/window-louver-2.jpg" },
+      { type: "image", src: "/images/window-grid.jpg" },
+      { type: "video", src: "/videos/steel-sliding-windows-hub.mp4" },
+    ],
   },
   {
     id: "structural-steel",

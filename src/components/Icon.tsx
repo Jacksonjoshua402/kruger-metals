@@ -100,6 +100,19 @@ const paths: Record<string, React.ReactNode> = {
   check: <path d="M20 6 9 17l-5-5" />,
   menu: <path d="M4 6h16M4 12h16M4 18h16" />,
   close: <path d="M18 6 6 18M6 6l12 12" />,
+  image: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path d="M21 15l-5-5L5 21" />
+    </>
+  ),
+  play: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M10 8l6 4-6 4z" fill="currentColor" stroke="none" />
+    </>
+  ),
 };
 
 export default function Icon({ name, className = "h-6 w-6" }: Props) {
